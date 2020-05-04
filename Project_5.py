@@ -2,21 +2,28 @@
 # project 5:
     
 def open_file():
+    ''' Open File with try-except to catch errors, if it fails to open, reprompt '''
+    
     filename = input("Input a file name: ")
-    
-    fp = open(filename,'r')
-    
+    while True:
+        
+        try:
+            fp = open(filename,'r')
+            break #sucessfull
+        # If the users enters in the incorrect file 
+        except IOError:
+            print("Unable to open file. Please try again.")
+            filename = input("Input a file name: ")
+
     return fp
-
-
-""" Need to add Try and Except"""
    
 def get_us_value(fp):
    
-    #skips two lines of txt file
+    #skips the first two header lines of txt file
     fp.readline()
     fp.readline()
     
+    #reads the txt file line by line
     for line in fp:
         state = str(line[0:20]).strip()
         percent =(line[25:29]).strip()
@@ -26,8 +33,8 @@ def get_us_value(fp):
         
     
 def get_min_value_and_state(fp):
-    
-    
+    ''' Find and Minimmum value in the file and its associated state '''
+    #Rewind file and skip first two headers
     fp.seek(0)
     fp.readline()
     fp.readline()
@@ -37,24 +44,22 @@ def get_min_value_and_state(fp):
     word = "NA"
 
     for line in fp:
-     
+     # skipping line with 'NA' 
         if not word in line:
-    
+            
+            
             state = str(line[0:20]).strip()
             value = float( (line[25:29]).strip())
-            
-            
-            
+         
             if value < min_value: 
                 min_value = value
                 min_state = state
                 
     return min_value, min_state
         
-        
-        
 
 def get_max_value_and_state(fp):
+    ''' Find and Maximum value in the file and its associated state '''
     
     fp.seek(0)
     fp.readline()
@@ -68,9 +73,8 @@ def get_max_value_and_state(fp):
         if not word in line:
     
             state = str(line[0:20]).strip()
-            value = float( (line[25:29]).strip())
+            value = float((line[25:29]).strip())
                     
-            
             if value > max_value: 
                 max_value = value
                 max_state = state
@@ -79,7 +83,7 @@ def get_max_value_and_state(fp):
     
         
 def display_herd_immunity(fp):
-    
+    ''' Displays all the States whose coverage is less than 90% '''
     
     print("\nStates with insufficient Measles herd immunity.")
     print("{:<25s}{:>5s}".format("State","Percent"))
@@ -96,17 +100,14 @@ def display_herd_immunity(fp):
             state = str(line[0:20]).strip()
             value = float( (line[25:29]).strip())
             
-            
             if value < 90.0:
                 state_90 = state
                 value_90 = value
             
                 print("{:<25s}{:>5f}".format(state_90,value_90))   
              
-
-
-
 def write_herd_immunity(fp):
+    ''' Writes into a file named herd.txt all the states whose coverage is less than 90% '''
     
     outfile = open("herd.txt", "w")
     
@@ -124,8 +125,7 @@ def write_herd_immunity(fp):
         
             state = str(line[0:20]).strip()
             value = float( (line[25:29]).strip())
-            
-            
+
             if value < 90.0:
                 state_90 = state
                 value_90 = value
@@ -134,26 +134,18 @@ def write_herd_immunity(fp):
     
     outfile.close()
 
-    
- 
-
-
-
 
 def main():
     
-    
-      
-    '''Open the file and try and except shit.'''
-     ## open the file
-    
+    '''Open the file and try and except.'''
+    # call function to open the file
     fp = open_file()
     
     percent = get_us_value(fp)
     
-    print("Overall US MMR Coverage:", percent)
+    print("Overall US MMR Coverage: ", percent)
     
-    # minumum value for MMR Coverage
+    # Minumum value for MMR Coverage
     
     min_value, min_state = get_min_value_and_state(fp)
     
